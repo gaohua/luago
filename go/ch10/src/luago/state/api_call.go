@@ -1,7 +1,7 @@
 package state
 
 import (
-	"fmt"
+	. "luago/api"
 	"luago/binchunk"
 	"luago/vm"
 )
@@ -10,6 +10,10 @@ func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
 	proto := binchunk.Undump(chunk)
 	c := newLuaClosure(proto)
 	self.stack.push(c)
+	if len(proto.Upvalues) > 0 { // set _ENV
+		env := self.registry.get(LUA_RIDX_GLOBALS)
+		c.upvals[0] = &upvalue{&env}
+	}
 	return 0
 }
 
@@ -17,8 +21,8 @@ func (self *luaState) Call(nArgs, nResults int) {
 	val := self.stack.get(-(nArgs + 1))
 	if c, ok := val.(*closure); ok {
 		if c.proto != nil {
-			fmt.Printf("call %s<%d,%d>\n", c.proto.Source,
-				c.proto.LineDefined, c.proto.LastLineDefined)
+			/*fmt.Printf("call %s<%d,%d>\n", c.proto.Source,
+			c.proto.LineDefined, c.proto.LastLineDefined)*/
 			self.callLuaClosure(nArgs, nResults, c)
 		} else {
 			self.callGoClosure(nArgs, nResults, c)
