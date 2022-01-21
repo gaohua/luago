@@ -7,7 +7,7 @@ type CompareOp = int
 type GoFunction func(LuaState) int
 
 func LuaUpvalueIndex(i int) int {
-	return LUA_REGISTRYINDEX - 1
+	return LUA_REGISTRYINDEX - i
 }
 
 type LuaState interface {
