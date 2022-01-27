@@ -14,6 +14,18 @@ const (
 	LUA_TTHREAD
 )
 
+/* exception and error */
+const (
+	LUA_OK = iota
+	LUA_YIELD
+	LUA_ERRRUN
+	LUA_ERRSYNTAX
+	LUA_ERRMEM
+	LUA_ERRGCMM
+	LUA_ERRERR
+	LUA_ERRFILE
+)
+
 /* arithmetic functions */
 const (
 	LUA_OPADD  = iota // +

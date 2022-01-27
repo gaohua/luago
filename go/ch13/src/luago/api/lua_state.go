@@ -92,5 +92,10 @@ type LuaState interface {
 	RawGetI(idx int, i int64) LuaType
 	RawSetI(idx int, i int64)
 
+	/* loop */
 	Next(idx int) bool
+
+	/* exception and error */
+	Error() int
+	PCall(nArgs, nResults, msgh int) int
 }

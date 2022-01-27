@@ -97,3 +97,22 @@ func (self *luaState) callGoClosure(nArgs, nResults int, c *closure) {
 		self.stack.pushN(results, nResults)
 	}
 }
+
+func (self *luaState) PCall(nArgs, nResults, msgh int) (status int) {
+	caller := self.stack
+	status = LUA_ERRRUN
+
+	//catch error
+	defer func() {
+		if err := recover(); err != nil {
+			for self.stack != caller {
+				self.popLuaStack()
+			}
+			self.stack.push(err)
+		}
+	}()
+
+	self.Call(nArgs, nResults)
+	status = LUA_OK
+	return
+}
