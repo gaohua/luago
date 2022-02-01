@@ -12,7 +12,7 @@ type IntegerExp struct {
 }
 type FloatExp struct {
 	Line int
-	val  float64
+	Val  float64
 }
 type StringExp struct {
 	Line int
