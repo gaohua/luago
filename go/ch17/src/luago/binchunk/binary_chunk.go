@@ -1,9 +1,32 @@
 package binchunk
 
+const (
+	LUA_SIGNATURE    = "\x1bLua"
+	LUAC_VERSION     = 0x53
+	LUAC_FORMAT      = 0
+	LUAC_DATA        = "\x19\x93\r\n\x1a\n"
+	CINT_SIZE        = 4
+	CSIZET_SIZE      = 8
+	INSTRUCTION_SIZE = 4
+	LUA_INTEGER_SIZE = 8
+	LUA_NUMBER_SIZE  = 8
+	LUAC_INT         = 0x5678
+	LUAC_NUM         = 370.5
+)
+
+const (
+	TAG_NIL       = 0x00
+	TAG_BOOLEAN   = 0x01
+	TAG_NUMBER    = 0x03
+	TAG_INTEGER   = 0x13
+	TAG_SHORT_STR = 0x04
+	TAG_LONG_STR  = 0x14
+)
+
 type binaryChunk struct {
 	header
-	sizeUpvalue byte
-	mainFunc    *Prototype
+	sizeUpvalues byte // ?
+	mainFunc     *Prototype
 }
 
 type header struct {
@@ -20,44 +43,22 @@ type header struct {
 	luacNum         float64
 }
 
-const (
-	LUA_SIGNATURE     = "\x1bLua"
-	LUAC_VERSION      = 0x53
-	LUAC_FORMAT       = 0
-	LUAC_DATA         = "\x19\x93\r\n\x1a\n"
-	CINT_SIZE         = 4
-	CSIZET_SIZE       = 8
-	INSTRUCTION_SIZE  = 4
-	LUA_INTERGER_SIZE = 8
-	LUA_NUMBER_SIZE   = 8
-	LUAC_INT          = 0x5678
-	LUAC_NUM          = 370.5
-)
-
+// function prototype
 type Prototype struct {
-	Source          string
+	Source          string // debug
 	LineDefined     uint32
 	LastLineDefined uint32
 	NumParams       byte
 	IsVararg        byte
-	MaxStackSize    byte //寄存器数量
+	MaxStackSize    byte
 	Code            []uint32
 	Constants       []interface{}
 	Upvalues        []Upvalue
 	Protos          []*Prototype
-	LineInfo        []uint32
-	LocVars         []LocVar
-	UpvalueNames    []string
+	LineInfo        []uint32 // debug
+	LocVars         []LocVar // debug
+	UpvalueNames    []string // debug
 }
-
-const (
-	TAG_NIL       = 0x00
-	TAG_BOOLEAN   = 0x10
-	TAG_NUMBER    = 0x03
-	TAG_INTEGER   = 0x13
-	TAG_SHORT_STR = 0x04
-	TAG_LONG_STR  = 0x14
-)
 
 type Upvalue struct {
 	Instack byte
@@ -70,9 +71,14 @@ type LocVar struct {
 	EndPC   uint32
 }
 
+func IsBinaryChunk(data []byte) bool {
+	return len(data) > 4 &&
+		string(data[:4]) == LUA_SIGNATURE
+}
+
 func Undump(data []byte) *Prototype {
 	reader := &reader{data}
-	reader.checkHeader()        //校验头部
-	reader.readByte()           //跳过 Upvalue 数量
-	return reader.readProto("") // 读取函数原型
+	reader.checkHeader()
+	reader.readByte() // size_upvalues
+	return reader.readProto("")
 }

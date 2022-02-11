@@ -68,7 +68,7 @@ func (self *reader) checkHeader() {
 		panic("size_t size mismatch!")
 	} else if self.readByte() != INSTRUCTION_SIZE {
 		panic("instruction size mismatch!")
-	} else if self.readByte() != LUA_INTERGER_SIZE {
+	} else if self.readByte() != LUA_INTEGER_SIZE {
 		panic("lua_Integer size mismatch!")
 	} else if self.readByte() != LUA_NUMBER_SIZE {
 		panic("lua_number size mismatch!")

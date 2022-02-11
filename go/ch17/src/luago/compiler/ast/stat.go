@@ -16,7 +16,7 @@ type WhileStat struct {
 
 type RepeatStat struct {
 	Block *Block
-	Rxp   Exp
+	Exp   Exp
 }
 
 type IfStat struct {
